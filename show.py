@@ -73,7 +73,6 @@ def compose_img_show():
     loss_combined_data = pd.concat([cnn['loss'], drnn['loss']], ignore_index=False, axis=1)
     loss_combined_data.columns = ['cnn_loss', 'drnn_loss']
 
-    sns.set(style="whitegrid")
     plt.figure(figsize=(8, 6))
     sns.lineplot(x=acc_combined_data.index, y='cnn_acc', data=acc_combined_data, marker='o', label='CNN')
     sns.lineplot(x=acc_combined_data.index, y='drnn_acc', data=acc_combined_data, marker='s', label='DRNN')
@@ -86,7 +85,6 @@ def compose_img_show():
     plt.savefig('./img/mnist_acc_comparison.png')
     plt.show()
 
-    sns.set(style="whitegrid")
     plt.figure(figsize=(8, 6))
     sns.lineplot(x=loss_combined_data.index, y='cnn_loss', data=loss_combined_data, marker='o', label='CNN')
     sns.lineplot(x=loss_combined_data.index, y='drnn_loss', data=loss_combined_data, marker='s', label='DRNN')
@@ -104,9 +102,22 @@ def single_img_show():
     plt.savefig('./img/mnist_single.png')
     plt.show()
 
+def test_comparison():
+    data = pd.read_csv('./checkpoint/validate_cuda.csv')
+    plt.figure(figsize=(10, 5))
+    plt.ylim(96, 100)
+    sns.barplot(data=data, x='model', y='acc', hue='type')
+    plt.title('Accuracy Comparison')
+    plt.xlabel('Model')
+    plt.ylabel('Accuracy (%)')
+    plt.legend(title='Type')
+    plt.savefig('./img/mnist_test_comparison.png')
+    plt.show()
+
 if __name__ == '__main__':
     # show_image()
     # static_count()
     # compose_img_show()
     # compose_img_show()
-    single_img_show()
+    # single_img_show()
+    test_comparison()

@@ -7,15 +7,13 @@
  @Description : 
 """
 import os
+from itertools import product
 
 import pandas as pd
 import torch
 from torch import nn, optim
-from torch.autograd import Variable
 from torch.utils.data import TensorDataset, DataLoader, ConcatDataset
 from torchvision.transforms import transforms
-import torch.nn.functional as F
-
 from tqdm import tqdm
 
 import transform
@@ -76,7 +74,7 @@ def train(dataloader, model, loss_fn, optimizer, device):
     return epoch_loss, epoch_acc
 
 
-def process_data(type='train', argument=False,trans=False):
+def process_data(type='train', argument=False, trans=False):
     # Convert the NumPy arrays to PyTorch tensors
     train_images, train_labels, test_images, test_labels = load()
     train_images_tensor = torch.tensor(train_images).reshape(-1, 1, 28, 28)
@@ -88,7 +86,6 @@ def process_data(type='train', argument=False,trans=False):
     # train_images_tensor = train_images_tensor.float().reshape(-1, 1, 28, 28) / 255.0
     # test_images_tensor = test_images_tensor.float().reshape(-1, 1, 28, 28) / 255.0
 
-
     # Create DataLoader for the training data
     if type == 'train':
         images_tensor = train_images_tensor
@@ -98,15 +95,14 @@ def process_data(type='train', argument=False,trans=False):
         labels_tensor = test_labels_tensor
     else:
         raise ValueError('type should be train or test')
-    argument_dataset = MNIST_data(images_tensor, labels_tensor, transform= transforms.Compose(
-                            [transforms.ToPILImage(), transform.RandomRotation(degrees=20), transform.RandomShift(3),
-                             transforms.ToTensor(), transforms.Normalize(mean=(0.5,), std=(0.5,))])
-                                  ,trans= trans)
+    argument_dataset = MNIST_data(images_tensor, labels_tensor, transform=transforms.Compose(
+        [transforms.ToPILImage(), transform.RandomRotation(degrees=20), transform.RandomShift(3),
+         transforms.ToTensor(), transforms.Normalize(mean=(0.5,), std=(0.5,))])
+                                  , trans=trans)
     dataset = MNIST_data(images_tensor, labels_tensor)
     if argument:
         dataset = ConcatDataset([dataset, argument_dataset])
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
 
     return dataloader, labels_tensor
 
@@ -123,7 +119,7 @@ def trainer(dataloader, model, device, mark=None):
     # Learning Rate Scheduler
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
     epochs = 10
-    epoch_loss_list, epoch_acc_list = [],[]
+    epoch_loss_list, epoch_acc_list = [], []
 
     # Loop through each epoch
     for epoch in range(epochs):
@@ -148,26 +144,42 @@ def trainer(dataloader, model, device, mark=None):
     print(f"Saved PyTorch Model State to {model.__class__.__name__}.pth")
 
 
-def evaluate(data_loader,model):
+def validate(dataloader, model, loss_fn, device):
+    size = len(dataloader.dataset)
     model.eval()
-    loss = 0
+    val_loss = 0.0
     correct = 0
+    total = 0
 
-    for data, target in data_loader:
-        data, target = Variable(data, volatile=True), Variable(target)
-        if torch.cuda.is_available():
-            data = data.to('cuda')
-            target = target.to('cuda')
+    with torch.no_grad():
+        with tqdm(total=len(dataloader), desc="Validation", unit="batch") as pbar:
+            for batch, (X, y) in enumerate(dataloader):
+                X, y = X.to(device), y.to(device)
+                pred = model(X)
+                loss = loss_fn(pred, y)
 
-        output = model(data)
+                val_loss += loss.item()
+                predicted = torch.argmax(pred, dim=1)
+                total += y.size(0)
+                correct += (predicted == y).sum().item()
 
-        loss += F.cross_entropy(output, target, size_average=False).data[0]
+                pbar.update(1)
+                pbar.set_postfix({'val_loss': val_loss / (batch + 1), 'val_accuracy': 100 * correct / total})
 
-        pred = output.data.max(1, keepdim=True)[1]
-        correct += pred.eq(target.data.view_as(pred)).cpu().sum()
+    epoch_loss = val_loss / len(dataloader)
+    epoch_acc = 100 * correct / size
+    return epoch_loss, epoch_acc
 
-    loss /= len(data_loader.dataset)
 
-    print('\nAverage loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)\n'.format(
-        loss, correct, len(data_loader.dataset),
-        100. * correct / len(data_loader.dataset)))
+def validater(device, dataloader):
+    loss_fn = nn.CrossEntropyLoss()
+    data = pd.DataFrame(columns=['loss', 'acc', 'type', 'model'])
+    for model, type in product(['CNN', 'DigitRecognizerNN'], ['origin', 'argument', 'normal']):
+        model = torch.load(f'./checkpoint/{model}_{device}_{type}.pth')
+        loss, acc = validate(dataloader, model, loss_fn, device)
+        print(model.__class__.__name__, type)
+        print(f"End of Validation: Avg loss: {loss:.4f}, Accuracy: {acc:.4f}%\n")
+        data.loc[len(data)] = [loss, acc, type, model.__class__.__name__]
+        # data = data.append(pd.DataFrame({'loss': loss, 'acc': acc, 'type': type, 'model': model.__class__.__name__}))
+    data.to_csv(f'./checkpoint/validate_{device}.csv', index=False)
+
