@@ -7,7 +7,8 @@
  @Description : 
 """
 import os
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas
@@ -97,10 +98,12 @@ def compose_img_show():
     plt.savefig('./img/mnist_loss_comparison.png')
     plt.show()
 
+
 def single_img_show():
     plt.imshow(train_images[0].reshape((28, 28)), cmap='gray')
     plt.savefig('./img/mnist_single.png')
     plt.show()
+
 
 def test_comparison():
     data = pd.read_csv('./checkpoint/validate_cuda.csv')
@@ -113,6 +116,10 @@ def test_comparison():
     plt.legend(title='Type')
     plt.savefig('./img/mnist_test_comparison.png')
     plt.show()
+
+
+
+
 
 if __name__ == '__main__':
     # show_image()

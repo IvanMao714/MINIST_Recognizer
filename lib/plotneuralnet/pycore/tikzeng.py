@@ -23,6 +23,7 @@ def to_cor():
 \def\SoftmaxColor{rgb:magenta,5;black,7}   
 \def\SumColor{rgb:blue,5;green,15}
 \def\ReluColor{rgb:blue,5;green,15}
+\def\BatchNormColor{rgb:yellow,5;green,15}
 """
 
 
@@ -188,6 +189,41 @@ def to_SoftMax(name, s_filer=10, offset="(0,0,0)", to="(0,0,0)", width=1.5, heig
     };
 """
 
+def to_BatchNorm(name, s_filer=10, offset="(0,0,0)", to="(0,0,0)", width=1.5, height=3, depth=25, opacity=0.8,
+                caption=" "):
+    return r"""
+\pic[shift={""" + offset + """}] at """ + to + """
+    {Box={
+        name=""" + name + """,
+        caption=""" + caption + """,
+        xlabel={{" ","dummy"}},
+        zlabel=""" + str(s_filer) + """,
+        fill=\BatchNormColor,
+        opacity=""" + str(opacity) + """,
+        height=""" + str(height) + """,
+        width=""" + str(width) + """,
+        depth=""" + str(depth) + """
+        }
+    };
+"""
+
+
+def to_Fc(name, s_filer=4096, offset="(0,0,0)", to="(0,0,0)", width=1, height=40, depth=40, caption=" "):
+    return r"""
+    \pic[shift={""" + offset + """}] at """ + to + """
+        {Box={
+            name=""" + name + """,
+            caption=""" + caption + """,
+            xlabel={{1, }},
+            zlabel=""" + str(s_filer) + """,
+            fill=\FcColor,
+            height=""" + str(height) + """,
+            width=""" + str(width) + """,
+            depth=""" + str(depth) + """
+            }
+        };
+    """
+
 
 def to_Sum(name, offset="(0,0,0)", to="(0,0,0)", radius=2.5, opacity=0.6):
     return r"""
@@ -209,7 +245,14 @@ def to_Sum(name, offset="(0,0,0)", to="(0,0,0)", radius=2.5, opacity=0.6):
 # """
 def to_connection(of, to):
     return r"""
-\draw [connection]   """+of +"""     -- node {\midarrow} """ + to + """;
+\draw [connection]   """ + of + """     -- node {\midarrow} """ + to + """;
+"""
+
+
+def to_prospect_image(pathfile, to='(-3,0,0)', width=8, height=8, name="temp"):
+    return r"""
+\node[canvas is zy plane at x=0] (""" + name + """) at """ + to + """ {\includegraphics[width=""" + str(
+        width) + "cm" + """,height=""" + str(height) + "cm" + """]{""" + pathfile + """}};
 """
 
 
