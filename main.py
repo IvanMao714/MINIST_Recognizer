@@ -13,7 +13,10 @@ from model.DigitRecognizerNN import DigitRecognizerNN
 from pipeline import process_data, trainer, validater
 
 # Instantiate the model and move it to the device (CPU or GPU)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Choose device based on availability
+# device = torch.device(torch.device("cuda") if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")
+
+"""Train the model"""
 # train_dataloader, train_labels_tensor = process_data(type='train', argument=False, trans=False)
 # trainer(train_dataloader, 'drnn', device, mark='origin')
 
@@ -27,14 +30,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # Choose 
 #         train_dataloader, train_labels_tensor = process_data(type='train', argument=False, trans=True)
 #     trainer(train_dataloader, model, device, mark=mark)
 
-# model = DigitRecognizerNN()
-# model.to(device)
-# model.load_state_dict(torch.load('./checkpoint/DigitRecognizerNN_cuda.pth'))
-# print(model)
-test_dataloader, test_labels_tensor = process_data(type='test', argument=False, trans=True)
-# trainer(train_dataloader, model, device, mark=mark)
-validater(device, test_dataloader)
-# test_dataloader, test_labels_tensor = process_data(type='test', argument=False, trans=False)
-# model = torch.load('./checkpoint/DigitRecognizerNN_cuda.pth')
-# print(model)
-# evaluate(test_dataloader,model)
+"""Test the model"""
+# test_dataloader, test_labels_tensor = process_data(type='test', argument=False, trans=True)
+# validater(device, test_dataloader)
+
+
+

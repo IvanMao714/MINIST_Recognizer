@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 import transform
 from dataset import MNIST_data
-from download import load
+from download import load, load_mnist_data
 from model.CNN import CNN
 from model.DigitRecognizerNN import DigitRecognizerNN
 
@@ -76,25 +76,16 @@ def train(dataloader, model, loss_fn, optimizer, device):
 
 def process_data(type='train', argument=False, trans=False):
     # Convert the NumPy arrays to PyTorch tensors
-    train_images, train_labels, test_images, test_labels = load()
-    train_images_tensor = torch.tensor(train_images).reshape(-1, 1, 28, 28)
-    train_labels_tensor = torch.tensor(train_labels)
-    test_images_tensor = torch.tensor(test_images).reshape(-1, 1, 28, 28)
-    test_labels_tensor = torch.tensor(test_labels)
-
-    # Normalize the images
-    # train_images_tensor = train_images_tensor.float().reshape(-1, 1, 28, 28) / 255.0
-    # test_images_tensor = test_images_tensor.float().reshape(-1, 1, 28, 28) / 255.0
+    if type == 'train':
+        images, labels = load_mnist_data('./data/MINIST/train')
+    elif type == 'test':
+        images, labels = load_mnist_data('./data/MINIST/test')
+    images_tensor = torch.tensor(images).reshape(-1, 1, 28, 28)
+    labels_tensor = torch.tensor(labels).long()
 
     # Create DataLoader for the training data
-    if type == 'train':
-        images_tensor = train_images_tensor
-        labels_tensor = train_labels_tensor
-    elif type == 'test':
-        images_tensor = test_images_tensor
-        labels_tensor = test_labels_tensor
-    else:
-        raise ValueError('type should be train or test')
+    # else:
+    #     raise ValueError('type should be train or test')
     argument_dataset = MNIST_data(images_tensor, labels_tensor, transform=transforms.Compose(
         [transforms.ToPILImage(), transform.RandomRotation(degrees=20), transform.RandomShift(3),
          transforms.ToTensor(), transforms.Normalize(mean=(0.5,), std=(0.5,))])

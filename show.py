@@ -4,7 +4,7 @@
  @CreateTime    : 2024/1/4 11:18
  @Author  : Ivan Mao
  @File    : show.py
- @Description : 
+ @Description : Figure show
 """
 import os
 
@@ -26,6 +26,7 @@ random_sel = np.random.randint(200, size=8)
 
 
 def show_image():
+    """Show dataset images"""
     grid = make_grid(
         torch.Tensor(train_images[random_sel].reshape((-1, 28, 28))).unsqueeze(1), nrow=8)
     plt.rcParams['figure.figsize'] = (16, 2)
@@ -36,6 +37,7 @@ def show_image():
 
 
 def static_count(train_labels=train_labels):
+    """Show the statics of dataset"""
     train_labels = pandas.Series(train_labels)
     plt.rcParams['figure.figsize'] = (8, 5)
     plt.bar(train_labels.value_counts().index, train_labels.value_counts())
@@ -48,6 +50,7 @@ def static_count(train_labels=train_labels):
 
 
 def compose_img_show():
+    """Show the composed images"""
     rotate = RandomRotation(20)
     shift = RandomShift(3)
     composed = transforms.Compose([RandomRotation(20),
@@ -67,6 +70,7 @@ def compose_img_show():
 
 
 def compose_img_show():
+    """Show result of the composed images"""
     cnn = pd.read_csv('./checkpoint/CNN_cuda.csv')
     drnn = pd.read_csv('./checkpoint/DigitRecognizerNN_cuda.csv')
     acc_combined_data = pd.concat([cnn['acc'], drnn['acc']], ignore_index=False, axis=1)
@@ -100,13 +104,15 @@ def compose_img_show():
 
 
 def single_img_show():
+    """Show single image"""
     plt.imshow(train_images[0].reshape((28, 28)), cmap='gray')
     plt.savefig('./img/mnist_single.png')
     plt.show()
 
 
 def test_comparison():
-    data = pd.read_csv('./checkpoint/validate_cuda.csv')
+    """Show test result"""
+    data = pd.read_csv('checkpoint/validate_cuda_1.csv')
     plt.figure(figsize=(10, 5))
     plt.ylim(96, 100)
     sns.barplot(data=data, x='model', y='acc', hue='type')
