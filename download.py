@@ -47,28 +47,24 @@ def load():
 
 
 def load_mnist_data(data_path):
-    # 初始化空列表来存储图像和标签
+
     images = []
     labels = []
 
-    # 遍历所有标签文件夹
     for label_folder in os.listdir(data_path):
         label_path = os.path.join(data_path, label_folder)
 
-        # 检查路径是否为文件夹
-        if os.path.isdir(label_path):
-            label = int(label_folder)  # 将文件夹名转换为整数标签
 
-            # 遍历标签文件夹中的图像文件
+        if os.path.isdir(label_path):
+            label = int(label_folder)
+
             for image_file in os.listdir(label_path):
                 image_path = os.path.join(label_path, image_file)
 
-                # 读取图像并将其添加到列表中
-                image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # 以灰度模式读取图像
+                image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
                 images.append(image)
                 labels.append(label)
 
-    # 将列表转换为NumPy数组
     images = np.array(images)
     labels = np.array(labels)
 

@@ -20,19 +20,22 @@ device = torch.device("cpu")
 # train_dataloader, train_labels_tensor = process_data(type='train', argument=False, trans=False)
 # trainer(train_dataloader, 'drnn', device, mark='origin')
 
-# for model, mark in product(['cnn', 'drnn'], ['origin', 'argument','normal']):
+# for model, mark in product(['cnn', 'drnn'], ['origin', 'augment','normal']):
 #     print(model, mark)
 #     if mark== 'origin':
-#         train_dataloader, train_labels_tensor = process_data(type='train', argument=False, trans=False)
-#     elif mark=='argument':
-#         train_dataloader, train_labels_tensor = process_data(type='train', argument=True, trans=True)
+#         train_dataloader, train_labels_tensor = process_data(type='train', augment=False, trans=False)
+#     elif mark=='augment':
+#         train_dataloader, train_labels_tensor = process_data(type='train', augment=True, trans=True)
 #     else:
-#         train_dataloader, train_labels_tensor = process_data(type='train', argument=False, trans=True)
+#         train_dataloader, train_labels_tensor = process_data(type='train', augment=False, trans=True)
 #     trainer(train_dataloader, model, device, mark=mark)
 
 """Test the model"""
-# test_dataloader, test_labels_tensor = process_data(type='test', argument=False, trans=True)
+# test_dataloader, test_labels_tensor = process_data(type='test', augment=False, trans=True)
 # validater(device, test_dataloader)
+for model in ['CNN', 'DigitRecognizerNN']:
+    model = torch.load(f'./checkpoint/{model}_cuda_augment.pth')
+    print(model)
 
 
 

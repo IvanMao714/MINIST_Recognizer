@@ -7,6 +7,7 @@
  @Description : 
 """
 from torch import nn
+from torch.nn import functional as F
 
 
 class CNN(nn.Module):
@@ -24,7 +25,7 @@ class CNN(nn.Module):
             nn.MaxPool2d(kernel_size=2),
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(16, 32, 5, 1, 2),     # output shape (32, 14, 14)
+            nn.Conv2d(16, 32, 5, 1, 2),  # output shape (32, 14, 14)
             nn.ReLU(),
             nn.MaxPool2d(2),
         )
@@ -34,5 +35,6 @@ class CNN(nn.Module):
         x = self.conv1(x)
         x = self.conv2(x)
         x = x.view(x.size(0), -1)
-        output = self.out(x)
+        x = self.out(x)
+        output = F.softmax(self.fc2(x))
         return output

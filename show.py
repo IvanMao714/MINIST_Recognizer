@@ -7,6 +7,7 @@
  @Description : Figure show
 """
 import os
+from itertools import product
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 import matplotlib.pyplot as plt
@@ -23,8 +24,9 @@ from transform import RandomRotation, RandomShift
 
 train_images, train_labels, test_images, test_labels = load()
 random_sel = np.random.randint(200, size=8)
-
-
+# blue_palette = ["#ff287bfc", "#00b2ff", "#00dbf1","#6efacc"]
+# sns.set_palette(sns.light_palette("#79C", reverse=True))
+sns.set_palette(sns.color_palette("ch:start=.2,rot=-.3",4))
 def show_image():
     """Show dataset images"""
     grid = make_grid(
@@ -95,7 +97,7 @@ def compose_img_show():
     sns.lineplot(x=loss_combined_data.index, y='drnn_loss', data=loss_combined_data, marker='s', label='DRNN')
 
     plt.xlabel('Epoch', fontsize=16)
-    plt.title('Comparison of Models: Loss Over Time')
+    plt.title('Comparison of Models: Training Loss Over Time')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend(title='Model', loc='lower right')
@@ -116,13 +118,51 @@ def test_comparison():
     plt.figure(figsize=(10, 5))
     plt.ylim(96, 100)
     sns.barplot(data=data, x='model', y='acc', hue='type')
-    plt.title('Accuracy Comparison')
+    plt.title('Testing Accuracy Comparison')
     plt.xlabel('Model')
     plt.ylabel('Accuracy (%)')
     plt.legend(title='Type')
     plt.savefig('./img/mnist_test_comparison.png')
     plt.show()
 
+def train_comparison():
+    """Show train result"""
+    data = pd.DataFrame(columns=['acc', 'loss', 'type', 'model'])
+    for model, type in product(['CNN', 'DigitRecognizerNN'], ['origin', 'augment', 'normal']):
+        train_data = pd.read_csv(f'checkpoint/{model}_cuda_{type}.csv')
+        train_data['type'] = type
+        train_data['model'] = model
+        data = pd.concat([data, train_data], ignore_index=False, axis=0)
+    #     print(train_data)
+    # print(data)
+
+    plt.figure(figsize=(10, 5))
+    sns.lineplot(data=data, x=data.index, y='acc', hue='type', style='model', markers=True)
+    plt.ylim(50, 100)
+    plt.title('Accuracy Comparison')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy (%)')
+    plt.legend(title='Type')
+    plt.savefig('./img/mnist_train_comparison.png')
+    plt.show()
+
+    sns.barplot(data=data, x='model', y='acc', hue='type')
+    plt.ylim(70, 100)
+    plt.title('Traing Accuracy Comparison')
+    plt.xlabel('Model')
+    plt.ylabel('Accuracy (%)')
+    plt.legend(title='Type')
+    plt.savefig('./img/mnist_train_comparison_bar.png')
+    plt.show()
+
+    sns.barplot(data=data, x='model', y='loss', hue='type')
+    # plt.ylim(70, 100)
+    plt.title('Traing Loss Comparison')
+    plt.xlabel('Model')
+    plt.ylabel('Accuracy (%)')
+    plt.legend(title='Type')
+    plt.savefig('./img/mnist_train_loss_comparison_bar.png')
+    plt.show()
 
 
 
@@ -133,4 +173,5 @@ if __name__ == '__main__':
     # compose_img_show()
     # compose_img_show()
     # single_img_show()
-    test_comparison()
+    # test_comparison()
+    train_comparison()

@@ -4,7 +4,7 @@
  @CreateTime    : 2024/1/3 22:00
  @Author  : Ivan Mao
  @File    : pipeline.py
- @Description : 
+ @Description : Pipeline for training and validating
 """
 import os
 from itertools import product
@@ -74,7 +74,7 @@ def train(dataloader, model, loss_fn, optimizer, device):
     return epoch_loss, epoch_acc
 
 
-def process_data(type='train', argument=False, trans=False):
+def process_data(type='train', augment=False, trans=False):
     # Convert the NumPy arrays to PyTorch tensors
     if type == 'train':
         images, labels = load_mnist_data('./data/MINIST/train')
@@ -91,7 +91,7 @@ def process_data(type='train', argument=False, trans=False):
          transforms.ToTensor(), transforms.Normalize(mean=(0.5,), std=(0.5,))])
                                   , trans=trans)
     dataset = MNIST_data(images_tensor, labels_tensor)
-    if argument:
+    if augment:
         dataset = ConcatDataset([dataset, argument_dataset])
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
