@@ -30,11 +30,11 @@ class CNN(nn.Module):
             nn.MaxPool2d(2),
         )
         self.out = nn.Linear(32 * 7 * 7, 10)
-
+ 
     def forward(self, x):
         x = self.conv1(x)
         x = self.conv2(x)
         x = x.view(x.size(0), -1)
         x = self.out(x)
-        output = F.softmax(self.fc2(x))
+        output = F.softmax(x)
         return output
