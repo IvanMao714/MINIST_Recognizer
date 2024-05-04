@@ -1,10 +1,6 @@
 # MINIST Recognizer
 <p align="center">
-    <img src="https://img.shields.io/badge/Python-yellow?style=for-the-badge&logo=python&logoColor=%233776AB
-    ">
-    <img src="https://img.shields.io/badge/Pytorch-blue?style=for-the-badge&logo=pytorch&logoColor=%23EE4C2C
-    ">
-    <img src="https://img.shields.io/github/last-commit/IvanMao714/Optimal-sample-selection?logoColor=blue&style=for-the-badge"/>
+    <img src="https://img.shields.io/badge/Python-yellow?style=for-the-badge&logo=python&logoColor=%233776AB"><img src="https://img.shields.io/badge/Pytorch-blue?style=for-the-badge&logo=pytorch&logoColor=%23EE4C2C"><img src="https://img.shields.io/github/last-commit/IvanMao714/Optimal-sample-selection?logoColor=blue&style=for-the-badge"/>
 </p>
 
 ## Abstract
